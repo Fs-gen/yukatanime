@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Chango&display=swap');
 #playlist {
     background-color: #29487d;
     /* padding: 10px; */
@@ -7,6 +9,11 @@
     list-style-type: decimal;
     border-radius: 0px 0px 10px 10px;
     width: 100%;
+}
+
+#title-style {
+    font-size: 23px;
+    font-family: 'Pacifico', cursive;
 }
 
 .container {
