@@ -13,71 +13,94 @@
     <script src="./js/sweetalert2.min.js"></script>
 </head>
 
-<body class="my-4">
+<body>
     <div class="container width">
-        <div class="playing text-center">
-            <h2>Yukata <span id="title-style">Music</span></h2>
-            <div>
-                <img class="song-image mb-5" src="./img/Rikka Logo.png" width="70%" alt="" srcset="">
-            </div>
-            <audio id="audio" autoplay="autoplay" tabindex="0" controls="" controlsList="nodownload" type="audio/mpeg">
-        <source type="audio/mp3" src="https://osanime.com/download/dl4/5f414b9cc43f6f65eab63c6ed677d1f0/osanime+wapkiz+com/Ano-yume-o-nazotte-(osanime.com).mp3">
+        <div class="content">
+            <div class="playing text-center">
+                <h2>Yukata <span id="title-style">Music</span></h2>
+                <div>
+                    <img id="img" class="song-image mb-5" src="./img/Rikka Logo.png" width="70%" alt="" srcset="">
+                </div>
+                <audio id="audio" preload="none" tabindex="0" controls="" controlsList="nodownload" type="audio/mpeg" onloadeddata="onloaded()">
+        <source type="audio/mp3" src="#">
             Sorry, your browser does not support HTML5 audio.
         </audio>
-        </div>
-        <!-- <hr> -->
-        <ul id="playlist">
-            <h4 class="mb-3">Playlist</h4>
-            <li class="active">
-                <a href="https://osanime.com/download/dl4/5f414b9cc43f6f65eab63c6ed677d1f0/osanime+wapkiz+com/Ano-yume-o-nazotte-(osanime.com).mp3">YOASOBI - Ano yume o nazotte</a>
-            </li>
-            <li>
-                <a href="https://osanime.com/download/dl4/cf8107f5c5b50ecf8ca852d1e1534a71/osanime+wapkiz+com/Yoru-ni-kakeru-(osanime.com).mp3">YOASOBI - Yoru ni kakeru</a>
-            </li>
-            <li>
-                <a href="https://osanime.com/download/dl5/43815e92f0de05dad59c738c39a862dd/osanime+wapkiz+com/Homura-(osanime.com).mp3">Lisa - Homura</a>
-            </li>
-            <li>
-                <a href="https://osanime.com/download/dl4/7dc6855878e7848d0a322aab4df5a253/osanime+wapkiz+com/Gunjou-(osanime.com).mp3">YOASOBI - Gunjou</a>
-            </li>
-            <li>
-                <a href="https://filebin.net/p45wbe8gpf1y5any/Fujii-Kaze-YASASHISA-Official-Video_vzhTpIIQR5I.mp3?t=lqpdmue9">Fuji Kaze - Yasashisa</a>
-            </li>
-        </ul>
-    </div>
+            </div>
+            <!-- <hr> -->
+            <ul id="playlist">
+                <h4 class="mb-3">Top 10 Best Song Anime Playlist</h4>
+                <!-- <li class="active">
+                    <a href="https://osanime.com/download/dl4/5f414b9cc43f6f65eab63c6ed677d1f0/osanime+wapkiz+com/Ano-yume-o-nazotte-(osanime.com).mp3">YOASOBI - Ano yume o nazotte</a>
+                </li>
+                <li>
+                    <a href="https://osanime.com/download/dl4/cf8107f5c5b50ecf8ca852d1e1534a71/osanime+wapkiz+com/Yoru-ni-kakeru-(osanime.com).mp3">YOASOBI - Yoru ni kakeru</a>
+                </li>
+                <li>
+                    <a href="https://osanime.com/download/dl5/43815e92f0de05dad59c738c39a862dd/osanime+wapkiz+com/Homura-(osanime.com).mp3">Lisa - Homura</a>
+                </li>
+                <li>
+                    <a href="https://osanime.com/download/dl4/7dc6855878e7848d0a322aab4df5a253/osanime+wapkiz+com/Gunjou-(osanime.com).mp3">YOASOBI - Gunjou</a>
+                </li>
+                <li>
+                    <a href="https://filebin.net/p45wbe8gpf1y5any/Fujii-Kaze-YASASHISA-Official-Video_vzhTpIIQR5I.mp3?t=lqpdmue9">Fuji Kaze - Yasashisa</a>
+                </li> -->
 
+            </ul>
+        </div>
+    </div>
+    <div id="loading">
+        <img id="img-loading" src="./img/loading.gif" width="200" alt="">
+    </div>
 </body>
 
+<script src="app.js"></script>
 <script>
-    var audio;
-    var playlist;
-    var tracks;
-    var current;
+    let audio;
+    let playlist;
+    let tracks;
+    let current;
 
-    init();
+    $(document).ready(function() {
+        $('#loading').hide();
+        init();
+    });
 
     function init() {
+        fetch('./songs.json')
+            .then(response => response.json())
+            .then(json =>
+                $.each(json, function(i, item) {
+                    $('ul').append('<li><a id="list-song" href="' + item.source + '" >' + item.title + '</a></li>')
+                })
+            )
         current = 0;
         audio = $('audio');
         playlist = $('#playlist');
         tracks = playlist.find('li a');
         len = tracks.length - 1;
         // audio[0].volume = .10;
+        audio[0].load();
         audio[0].play();
-        playlist.find('a').click(function(e) {
+
+        $('#playlist').on('click', '#list-song', function(e) {
             e.preventDefault();
             link = $(this);
             current = link.parent().index();
+            $('#loading').show();
             run(link, audio[0]);
         });
+
         audio[0].addEventListener('ended', function(e) {
-            current++;
+
+            console.log(current);
+            $('#loading').show();
             if (current == len) {
                 current = 0;
                 link = playlist.find('a')[0];
             } else {
                 link = playlist.find('a')[current];
             }
+            current++;
             run($(link), audio[0]);
         });
     }
@@ -88,6 +111,11 @@
         par.addClass('active').siblings().removeClass('active');
         audio[0].load();
         audio[0].play();
+    }
+
+    function onloaded() {
+        console.log('loaded');
+        $('#loading').hide();
     }
 </script>
 
